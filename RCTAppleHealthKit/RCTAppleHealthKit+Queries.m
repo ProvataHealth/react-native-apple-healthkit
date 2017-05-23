@@ -27,7 +27,6 @@
                          limit:1
                sortDescriptors:@[timeSortDescriptor]
                 resultsHandler:^(HKSampleQuery *query, NSArray *results, NSError *error) {
-
                       if (!results) {
                           if (completion) {
                               completion(nil, nil, nil, error);
@@ -113,14 +112,14 @@
 
 
 
-- (void)fetchSleepCategorySamplesForPredicate:(NSPredicate *)predicate
-                                   limit:(NSUInteger)lim
-                                   completion:(void (^)(NSArray *, NSError *))completion {
+- (void)fetchCategorySamplesOfType:(HKCategoryType *)categoryType
+                         predicate:(NSPredicate *)predicate
+                             limit:(NSUInteger)lim
+                        completion:(void (^)(NSArray *, NSError *))completion {
 
 
     NSSortDescriptor *timeSortDescriptor = [[NSSortDescriptor alloc] initWithKey:HKSampleSortIdentifierEndDate
                                                                        ascending:false];
-
 
     // declare the block
     void (^handlerBlock)(HKSampleQuery *query, NSArray *results, NSError *error);
@@ -149,25 +148,35 @@
                     NSString *startDateString = [RCTAppleHealthKit buildISO8601StringFromDate:sample.startDate];
                     NSString *endDateString = [RCTAppleHealthKit buildISO8601StringFromDate:sample.endDate];
 
-                    NSString *valueString;
+                    NSDictionary *elem;
 
-                    switch (val) {
-                      case HKCategoryValueSleepAnalysisInBed:
-                        valueString = @"INBED";
-                      break;
-                      case HKCategoryValueSleepAnalysisAsleep:
-                        valueString = @"ASLEEP";
-                      break;
-                     default:
-                        valueString = @"UNKNOWN";
-                     break;
-                  }
+                    if ([categoryType identifier] == HKCategoryTypeIdentifierSleepAnalysis) {
+                        NSString *valueString;
 
-                    NSDictionary *elem = @{
-                            @"value" : valueString,
-                            @"startDate" : startDateString,
-                            @"endDate" : endDateString,
-                    };
+                        switch (val) {
+                            case HKCategoryValueSleepAnalysisInBed:
+                                valueString = @"INBED";
+                                  break;
+                            case HKCategoryValueSleepAnalysisAsleep:
+                                valueString = @"ASLEEP";
+                                break;
+                            default:
+                                valueString = @"UNKNOWN";
+                                break;
+                        }
+
+                        elem = @{
+                                @"value" : valueString,
+                                @"startDate" : startDateString,
+                                @"endDate" : endDateString,
+                        };
+                    }
+                    else {
+                        elem = @{
+                                 @"startDate" : startDateString,
+                                 @"endDate" : endDateString,
+                             };
+                    }
 
                     [data addObject:elem];
                 }
@@ -177,28 +186,11 @@
         }
     };
 
-    // HKSampleQuery *query = [[HKSampleQuery alloc] initWithSampleType:quantityType
-    //                                                        predicate:predicate
-    //                                                            limit:lim
-    //                                                  sortDescriptors:@[timeSortDescriptor]
-    //                                                   resultsHandler:handlerBlock];
-
-    HKCategoryType *categoryType =
-    [HKObjectType categoryTypeForIdentifier:HKCategoryTypeIdentifierSleepAnalysis];
-
-    // HKCategorySample *categorySample =
-    // [HKCategorySample categorySampleWithType:categoryType
-    //                                    value:value
-    //                                startDate:startDate
-    //                                  endDate:endDate];
-
-
    HKSampleQuery *query = [[HKSampleQuery alloc] initWithSampleType:categoryType
                                                           predicate:predicate
                                                               limit:lim
                                                     sortDescriptors:@[timeSortDescriptor]
                                                      resultsHandler:handlerBlock];
-
 
     [self.healthStore executeQuery:query];
 }

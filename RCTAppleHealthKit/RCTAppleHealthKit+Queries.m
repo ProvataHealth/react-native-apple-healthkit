@@ -27,7 +27,6 @@
                          limit:1
                sortDescriptors:@[timeSortDescriptor]
                 resultsHandler:^(HKSampleQuery *query, NSArray *results, NSError *error) {
-
                       if (!results) {
                           if (completion) {
                               completion(nil, nil, nil, error);
@@ -155,16 +154,16 @@
                         NSString *valueString;
 
                         switch (val) {
-                          case HKCategoryValueSleepAnalysisInBed:
-                            valueString = @"INBED";
-                          break;
-                          case HKCategoryValueSleepAnalysisAsleep:
-                            valueString = @"ASLEEP";
-                          break;
-                         default:
-                            valueString = @"UNKNOWN";
-                         break;
-                      }
+                            case HKCategoryValueSleepAnalysisInBed:
+                                valueString = @"INBED";
+                                  break;
+                            case HKCategoryValueSleepAnalysisAsleep:
+                                valueString = @"ASLEEP";
+                                break;
+                            default:
+                                valueString = @"UNKNOWN";
+                                break;
+                        }
 
                         elem = @{
                                 @"value" : valueString,

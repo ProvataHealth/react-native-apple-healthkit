@@ -29,15 +29,15 @@
                            predicate:predicate
                                limit:limit
                           completion:^(NSArray *results, NSError *error) {
-                                 if(results){
-                                     callback(@[[NSNull null], results]);
-                                     return;
-                                 } else {
-                                     NSLog(@"error getting sleep samples: %@", error);
-                                     callback(@[RCTMakeError(@"error getting sleep samples", nil, nil)]);
-                                     return;
-                                 }
-                             }];
+                              if(results){
+                                  callback(@[[NSNull null], results]);
+                                  return;
+                              } else {
+                                  NSLog(@"error getting sleep samples: %@", error);
+                                  callback(@[RCTMakeError(@"error getting sleep samples", nil, nil)]);
+                                  return;
+                              }
+                          }];
 
 }
 
